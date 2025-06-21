@@ -1,0 +1,9 @@
+to run app 
+-Turn on Raspberry pi and get IP of wifi network connected
+- modifyy IP in app.py 
+- open terminal in program folder on laptop
+- give commnads 
+            .\venv\Scripts\activate      --to activate env
+            python app.py                -- to run app
+
+after running app paste that IP url of app in tablet 
