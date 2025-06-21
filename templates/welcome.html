@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Smart Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .welcome-container {
+            max-width: 600px;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        .btn {
+            transition: all 0.3s ease;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.125rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            font-weight: 700;
+        }
+        p {
+            color: #4a5568;
+            font-size: 1.125rem;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 640px) {
+            .welcome-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 welcome-container text-center">
+        <h1 class="mb-4">Welcome to NexGen Billing Cart</h1>
+        <p class="mb-6">Scan items, pay, and go!</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/home" class="btn btn-success">
+                <i class="fas fa-shopping-cart"></i> Start Shopping
+            </a>
+            <a href="/admin" class="btn btn-primary">
+                <i class="fas fa-cog"></i> Admin Settings
+            </a>
+        </div>
+    </div>
+</body>
+</html>

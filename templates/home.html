@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            position: relative;
+        }
+        .video-feed {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 320px;
+            height: 240px;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+        }
+        .content {
+            margin-right: 360px;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            font-size: 1.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-warning {
+            background: #f6c107;
+            color: #1a202c;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: #f7fafc;
+            color: #1a202c;
+        }
+        tr {
+            transition: background 0.2s ease;
+        }
+        tr:hover {
+            background: #f1f5f9;
+        }
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #28a745, #34d058);
+            color: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+            animation: popIn 2.5s ease-in-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+        @media (max-width: 1024px) {
+            .video-feed {
+                position: static;
+                width: 100%;
+                max-width: 320px;
+                margin: 1rem auto;
+            }
+            .content {
+                margin-right: 0;
+            }
+        }
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 2rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+            table {
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 0.5rem;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('video_feed') }}" class="video-feed" alt="Live Video Feed">
+
+
+        <div class="content">
+            <h1 class="text-center">Smart Cart</h1>
+          
+
+            <div class="card">
+                <h3><i class="fas fa-shopping-cart mr-2"></i> Detected Items in Cart</h3>
+                <table id="items-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-box mr-1"></i> Item</th>
+                            <th><i class="fas fa-rupee-sign mr-1"></i> Price (₹)</th>
+                            <th><i class="fas fa-hashtag mr-1"></i> Quantity</th>
+                            <th><i class="fas fa-calculator mr-1"></i> Subtotal (₹)</th>
+                            <th><i class="fas fa-cog mr-1"></i> Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+                <h4 class="mt-4">Total: ₹<span id="total">0</span></h4>
+                <p class="text-gray-600">Currently in view: <span id="current-detections">-</span></p>
+                <div class="flex flex-col sm:flex-row gap-4 mt-4">
+                    <a href="/checkout" class="btn btn-success" id="checkout-btn" aria-disabled="true">
+                        <i class="fas fa-check-circle"></i> Checkout
+                    </a>
+                    <button id="clear-btn" class="btn btn-warning">
+                        <i class="fas fa-trash-alt"></i> Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="popup" role="alert"></div>
+
+    <script>
+        let previousItems = {};
+
+        function updateItems() {
+            fetch('/items')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('items-body');
+                    tbody.innerHTML = '';
+                    for (const [item, qty] of Object.entries(data.items)) {
+                        const subtotal = data.prices[item] * qty;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item}</td>
+                            <td>₹${data.prices[item]}</td>
+                            <td>${qty}</td>
+                            <td>₹${subtotal}</td>
+                            <td><button class="btn btn-danger btn-sm remove-btn" data-item="${item}" aria-label="Remove ${item}"><i class="fas fa-trash"></i> Remove</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+                    document.getElementById('total').textContent = data.total;
+                    document.getElementById('current-detections').textContent = data.current.join(', ') || '-';
+
+                    // Enable/disable checkout button
+                    const checkoutBtn = document.getElementById('checkout-btn');
+                    if (Object.keys(data.items).length === 0) {
+                        checkoutBtn.classList.add('disabled');
+                        checkoutBtn.setAttribute('aria-disabled', 'true');
+                    } else {
+                        checkoutBtn.classList.remove('disabled');
+                        checkoutBtn.removeAttribute('aria-disabled');
+                    }
+
+                    // Check for new items
+                    const newItems = [];
+                    for (const [item, qty] of Object.entries(data.items)) {
+                        if (!(item in previousItems) || previousItems[item] < qty) {
+                            newItems.push(`${item} x${qty}`);
+                        }
+                    }
+                    if (newItems.length > 0) {
+                        showPopup(`Added: ${newItems.join(', ')}`);
+                    }
+                    previousItems = { ...data.items };
+                })
+                .catch(error => console.error('Error fetching items:', error));
+        }
+
+        function showPopup(message) {
+            const popup = document.getElementById('popup');
+            popup.textContent = message;
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 2500);
+        }
+
+        function removeItem(item) {
+            fetch(`/remove/${item}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) updateItems();
+                })
+                .catch(error => console.error('Error removing item:', error));
+        }
+
+        function clearCart() {
+            fetch('/clear', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) updateItems();
+                })
+                .catch(error => console.error('Error clearing cart:', error));
+        }
+
+        // Event listeners
+        document.getElementById('clear-btn').addEventListener('click', clearCart);
+        document.getElementById('items-table').addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-btn') || event.target.parentElement.classList.contains('remove-btn')) {
+                const item = event.target.getAttribute('data-item') || event.target.parentElement.getAttribute('data-item');
+                removeItem(item);
+            }
+        });
+        document.getElementById('checkout-btn').addEventListener('click', (event) => {
+            if (event.target.classList.contains('disabled')) {
+                event.preventDefault();
+                showPopup('Your cart is empty. Please add items first.');
+            }
+        });
+
+        // Update every 1 second
+        setInterval(updateItems, 1000);
+        updateItems();
+    </script>
+</body>
+</html>

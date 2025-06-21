@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+            max-width: 400px;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        .btn {
+            transition: all 0.3s ease;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-group i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        .form-control {
+            padding-left: 2.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .alert {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .error-shake {
+            animation: shake 0.3s ease-in-out;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #1a202c;
+            font-weight: 700;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        @media (max-width: 640px) {
+            .login-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 login-container">
+        <h1 class="text-center mb-6">Admin Login</h1>
+        <form method="post" id="login-form">
+            <div class="mb-4 input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" class="form-control" id="pin" name="pin" placeholder="Enter PIN" required aria-label="PIN">
+            </div>
+            {% if error %}
+                <div class="alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 error-shake" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary mb-3">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </form>
+        <a href="/" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Welcome
+        </a>
+    </div>
+</body>
+</html>

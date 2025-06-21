@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        .confirmation-box {
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            font-size: 1.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        h4 {
+            font-size: 1.25rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn.disabled {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .payment-btn {
+            font-size: 1.125rem;
+            width: 140px;
+            justify-content: center;
+        }
+        table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: #f7fafc;
+            color: #1a202c;
+        }
+        tr {
+            transition: background 0.2s ease;
+        }
+        tr:hover {
+            background: #f1f5f9;
+        }
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-group i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        .form-control.with-icon {
+            padding-left: 2.5rem;
+        }
+        #qr-code {
+            display: none;
+            margin-top: 1rem;
+            animation: zoomIn 0.5s ease-out;
+        }
+        #qr-code img {
+            max-width: 200px;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+        }
+        #payment-details {
+            display: none;
+            margin-top: 1rem;
+        }
+        .alert {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 2rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+            table {
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 0.5rem;
+            }
+            .payment-btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Checkout</h1>
+        {% if error %}
+            <div class="card">
+                <div class="alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    {{ error }}
+                </div>
+                <a href="/" class="btn btn-secondary mt-3">
+                    <i class="fas fa-arrow-left"></i> Back to Welcome
+                </a>
+            </div>
+        {% elif trans_id %}
+            <div class="card confirmation-box">
+                <h3 class="text-center"><i class="fas fa-check-circle mr-2"></i> Thank You for Shopping!</h3>
+                <h4>Your Bill</h4>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <td>{{ trans_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Items</th>
+                            <td>
+                                {% if items_str %}
+                                    <table class="w-full">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="fas fa-box mr-1"></i> Item</th>
+                                                <th><i class="fas fa-rupee-sign mr-1"></i> Price (₹)</th>
+                                                <th><i class="fas fa-hashtag mr-1"></i> Qty</th>
+                                                <th><i class="fas fa-calculator mr-1"></i> Subtotal (₹)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item_entry in items_str.split(',') %}
+                                                {% set item_parts = item_entry.split(' x') %}
+                                                {% set item = item_parts[0] %}
+                                                {% set qty = item_parts[1]|int %}
+                                                <tr>
+                                                    <td>{{ item }}</td>
+                                                    <td>₹{{ prices[item] }}</td>
+                                                    <td>{{ qty }}</td>
+                                                    <td>₹{{ prices[item] * qty }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <p>No items</p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total</th>
+                            <td>₹{{ total }}</td>
+                        </tr>
+                        <tr>
+                            <th>Payment Mode</th>
+                            <td>{{ payment_mode }}</td>
+                        </tr>
+                        <tr>
+                            <th>Payment Details</th>
+                            <td>{{ payment_details or 'None' }}</td>
+                        </tr>
+                        {% if payment_mode == "Cash" and return_amount > 0 %}
+                         <tr>
+                             <th>Return Amount</th>
+                             <td>₹{{ return_amount }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th>Mobile Number</th>
+                            <td>{{ mobile_number or 'Not provided' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% if payment_mode == "UPI" %}
+                    <p class="mt-3">UPI QR Code:</p>
+                    <img src="{{ url_for('generate_upi_qr') }}" alt="UPI QR Code" class="mx-auto">
+                {% endif %}
+                <a href="/" class="btn btn-primary mt-3">
+                    <i class="fas fa-home"></i> Back to Welcome
+                </a>
+            </div>
+        {% else %}
+            <div class="card">
+                <h3><i class="fas fa-shopping-cart mr-2"></i> Review Your Cart</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-box mr-1"></i> Item</th>
+                            <th><i class="fas fa-rupee-sign mr-1"></i> Price (₹)</th>
+                            <th><i class="fas fa-hashtag mr-1"></i> Qty</th>
+                            <th><i class="fas fa-calculator mr-1"></i> Subtotal (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item, qty in items.items() %}
+                        <tr>
+                            <td>{{ item }}</td>
+                            <td>₹{{ prices[item] }}</td>
+                            <td>{{ qty }}</td>
+                            <td>₹{{ prices[item] * qty }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <h4 class="mt-4">Total: ₹{{ total }}</h4>
+
+                <form method="post" id="checkout-form">
+                    <div class="mb-4 input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" class="form-control with-icon" id="mobile_number" name="mobile_number" 
+                               pattern="[0-9]{10}" placeholder="e.g., 9876543210" 
+                               title="Enter a valid 10-digit mobile number" aria-label="Mobile Number">
+                        <label for="mobile_number" class="text-sm text-gray-600">Mobile Number (Optional)</label>
+                    </div>
+
+                    <h5 class="mb-3">Select Payment Method</h5>
+                    <input type="hidden" name="payment_mode" id="payment_mode" value="">
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+                        <button type="button" class="btn btn-success payment-btn" onclick="selectPayment('Cash')">
+                            <i class="fas fa-money-bill"></i> Cash
+                        </button>
+                        <button type="button" class="btn btn-primary payment-btn" onclick="selectPayment('Card')">
+                            <i class="fas fa-credit-card"></i> Card
+                        </button>
+                        <button type="button" class="btn btn-info payment-btn" onclick="selectPayment('UPI')">
+                            <i class="fas fa-qrcode"></i> UPI
+                        </button>
+                    </div>
+
+                    <div id="payment-details">
+                        <div id="cash-details" class="hidden">
+                            <div class="input-group">
+                                <i class="fas fa-rupee-sign"></i>
+                                <input type="number" class="form-control with-icon" id="cash_tendered" name="cash_tendered" 
+                                       min="{{ total }}" step="1" aria-label="Cash Tendered">
+                                <label for="cash_tendered" class="text-sm text-gray-600">Cash Tendered (₹)</label>
+                            </div>
+                        </div>
+                        <div id="card-details" class="hidden">
+                            <div class="input-group">
+                                <i class="fas fa-credit-card"></i>
+                                <input type="text" class="form-control with-icon" id="card_last4" name="card_last4" 
+                                       maxlength="4" pattern="\d{4}" aria-label="Card Last 4 Digits">
+                                <label for="card_last4" class="text-sm text-gray-600">Card Last 4 Digits</label>
+                            </div>
+                        </div>
+                        <div id="upi-details" class="hidden">
+                            <div class="input-group">
+                                <i class="fas fa-qrcode"></i>
+                                <input type="text" class="form-control with-icon" id="upi_trans_id" name="upi_trans_id" 
+                                       aria-label="UPI Transaction ID">
+                                <label for="upi_trans_id" class="text-sm text-gray-600">UPI Transaction ID (Optional)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="qr-code">
+                        <img src="{{ url_for('generate_upi_qr') }}" alt="UPI QR Code">
+                        <p class="text-center mt-2">Scan to pay ₹{{ total }} via UPI</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                        <button type="submit" class="btn btn-success disabled" id="complete-btn" disabled>
+                            <i class="fas fa-check"></i> Complete Checkout
+                        </button>
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Welcome
+                        </a>
+                    </div>
+                </form>
+<!-- Review Form After Billing -->
+<hr class="my-6">
+<h4 class="mt-4">We value your feedback</h4>
+<form action="/submit_review" method="POST" class="space-y-4 mt-3">
+
+    <select name="rating" class="form-control w-full" required>
+        <option value="" disabled selected>Rate your experience</option>
+        <option value="5">★★★★★ - Excellent</option>
+        <option value="4">★★★★ - Good</option>
+        <option value="3">★★★ - Average</option>
+        <option value="2">★★ - Poor</option>
+        <option value="1">★ - Bad</option>
+    </select>
+    <textarea name="review" placeholder="Write your feedback..." class="form-control w-full" rows="3"></textarea>
+    <button type="submit" class="btn btn-success"><i class="fas fa-paper-plane"></i> Submit Review</button>
+</form>
+
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function selectPayment(mode) {
+            document.getElementById('payment_mode').value = mode;
+            document.getElementById('complete-btn').disabled = false;
+            document.getElementById('complete-btn').classList.remove('disabled');
+            document.getElementById('payment-details').style.display = 'none';
+            document.getElementById('cash-details').style.display = 'none';
+            document.getElementById('card-details').style.display = 'none';
+            document.getElementById('upi-details').style.display = 'none';
+            document.getElementById('qr-code').style.display = 'none';
+            if (mode === 'Cash') {
+                document.getElementById('payment-details').style.display = 'block';
+                document.getElementById('cash-details').style.display = 'block';
+            } else if (mode === 'Card') {
+                document.getElementById('payment-details').style.display = 'block';
+                document.getElementById('card-details').style.display = 'block';
+            } else if (mode === 'UPI') {
+                document.getElementById('payment-details').style.display = 'block';
+                document.getElementById('upi-details').style.display = 'block';
+                document.getElementById('qr-code').style.display = 'block';
+            }
+        }
+
+        document.getElementById('mobile_number').addEventListener('input', function(e) {
+            const value = e.target.value;
+            if (value && !/^[0-9]{10}$/.test(value)) {
+                e.target.setCustomValidity('Please enter a valid 10-digit mobile number');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #1a202c;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            font-size: 1.5rem;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: #f7fafc;
+            color: #1a202c;
+        }
+        tr {
+            transition: background 0.2s ease;
+        }
+        tr:hover {
+            background: #f1f5f9;
+        }
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .updated {
+            animation: flash 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes flash {
+            0% { background: #e6fffa; }
+            100% { background: none; }
+        }
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 2rem;
+            }
+            h3 {
+                font-size: 1.25rem;
+            }
+            table {
+                font-size: 0.8rem;
+            }
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Admin Panel</h1>
+        <a href="/" class="btn btn-secondary mb-4">
+            <i class="fas fa-arrow-left"></i> Back to Welcome
+        </a>
+
+        <!-- Transactions -->
+        <div class="card">
+            <h3><i class="fas fa-history mr-2"></i> Transaction History</h3>
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-id-badge mr-1"></i> ID</th>
+                        <th><i class="fas fa-shopping-cart mr-1"></i> Items</th>
+                        <th><i class="fas fa-rupee-sign mr-1"></i> Total (₹)</th>
+                        <th><i class="fas fa-credit-card mr-1"></i> Payment Mode</th>
+                        <th><i class="fas fa-clock mr-1"></i> Timestamp</th>
+                        <th><i class="fas fa-info-circle mr-1"></i> Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trans in transactions %}
+                    <tr>
+                        <td>{{ trans[0] }}</td>
+                        <td>{{ trans[1] }}</td>
+                        <td>₹{{ trans[2] }}</td>
+                        <td>{{ trans[3] }}</td>
+                        <td>{{ trans[4] }}</td>
+                        <td>{{ trans[5] or 'None' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Item Prices -->
+        <div class="card">
+            <h3><i class="fas fa-tags mr-2"></i> Manage Item Prices</h3>
+            <table class="price-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-box mr-1"></i> Item</th>
+                        <th><i class="fas fa-rupee-sign mr-1"></i> Price (₹)</th>
+                        <th><i class="fas fa-cog mr-1"></i> Action</th>
+                    </tr>
+                </thead>
+                <tbody id="price-table">
+                    {% for item, price in prices.items() %}
+                    <tr>
+                        <td>{{ item }}</td>
+                        <td>
+                            <input type="number" class="form-control w-24" value="{{ price }}" data-item="{{ item }}" aria-label="Price for {{ item }}">
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm update-price" data-item="{{ item }}">
+                                <i class="fas fa-save"></i> Update
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.update-price').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.getAttribute('data-item');
+                const priceInput = button.parentElement.parentElement.querySelector('input');
+                const newPrice = priceInput.value;
+                const row = button.parentElement.parentElement;
+
+                fetch('/update_price', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `item=${item}&price=${newPrice}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        row.classList.add('updated');
+                        setTimeout(() => row.classList.remove('updated'), 500);
+                        alert(`Price for ${item} updated to ₹${newPrice}`);
+                    }
+                })
+                .catch(error => console.error('Error updating price:', error));
+            });
+        });
+    </script>
+</body>
+</html>
